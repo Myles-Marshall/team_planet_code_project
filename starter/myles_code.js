@@ -1,3 +1,6 @@
+const prompt = require("prompt-sync")();
+const gravityFactors = require('./gravityFactors.js');
+
 function calculateUserFactors(factorType, value) {
     let results = {}
     let factor = `${factorType}`
