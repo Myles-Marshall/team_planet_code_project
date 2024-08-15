@@ -11,7 +11,7 @@ const repl = require('repl');
 const fs = require('fs');
 const path = require('path');
 
-const scripts = ['./index.js'];
+const scripts = ['./index.js', './tristan_code.js'];
 
 const loadFunctions = () => {
     scripts.forEach(script => {
