@@ -2,177 +2,91 @@ const prompt = require("prompt-sync")();
 const earthGravityFactors = require('./utils/earthGravityFactors.js');
 const alienGravityFactors = require('./utils/alienGravityFactors.js');
 
-function calculateUserFactors(factorType, factorSystem, measurement, factorValue, factorPlanets) {
+function calculateUserFactors(factorType, factorSystem, factorValue, factorPlanets) {
     let results = {};
-
-    switch (factorType) {
-        case "jump":
-            for (let planet in factorPlanets) {
-                results[planet] = parseFloat((factorValue / factorPlanets[planet]).toFixed(2));
-            }
-            break;
-        case "weight":
-            for (let planet in factorPlanets) {
-                results[planet] = parseFloat((factorValue * factorPlanets[planet]).toFixed(2));
-            }
-            break;
-    }
-
-    for (let key in results) {
-        console.log(`Your ${factorType} on ${key} is ${results[key]} ${measurement}`);
-    }
-}
-
-function calculateUserFactors2(factorType, factorSystem, factorValue, factorPlanets) {
-    let results = {};
-    let factorName;
-
-    switch (factorType) {
-        case "1":
-            factorName = "jump";
-            for (let planet in factorPlanets) {
-                results[planet] = parseFloat((factorValue / factorPlanets[planet]).toFixed(2))
-            }
-            break;
-        default: 
-            factorName = "weight"
-            for (let planet in factorPlanets) {
-                results[planet] = parseFloat((factorValue * factorPlanets[planet]).toFixed(2))
-            }
-    }
+    let factorName = "weight";
+    let measurement = "repetitions";
 
     let measurementTypes = {
         "1": [undefined, "cm", "inches"],
         "2": [undefined, "kg", "lbs"],
     }
 
+    for (let planet in factorPlanets) {
+        if (factorType === "2") {
+            results[planet] = parseFloat((factorValue * factorPlanets[planet]).toFixed(2))
+        } else {
+            factorType == 3 ? factorName = "pushups" : factorName = "jump";
+            results[planet] = parseFloat((factorValue / factorPlanets[planet]).toFixed(2))
+        }
+    }
+
+    if (factorName !== "pushups") {
+        measurement = measurementTypes[factorType][factorSystem];
+    }
+
     for (let key in results) {
-        console.log(`Your ${factorName} on ${key} is ${results[key]} ${measurementTypes[factorType][factorSystem]}`)
+        console.log(`Your ${factorName} on ${key} is ${results[key]} ${measurement}`)
     }
 }
 
 function getUserFactors() {
     let factorType;
     let factorSystem;
-    let measurement;
     let factorValue;
     let factorPlanets;
 
     while (true) {
-        console.log("Enter factor type (Jump or Weight):");
+        console.log("Enter a number for factor type (1 for Jump, 2 for Weight, 3 for Pushups):")
         factorType = prompt("> ").trim();
 
-        if (factorType === "jump" || factorType === "weight") {
-            break;
-    } else {
-            console.error("Invalid factor type, retry");
-        }
-    }
-
-    while (true) {
-        console.log("Enter measurement system (Metric or Imperial):")
-        factorSystem = prompt("> ").trim();
-
-        if (factorSystem === "metric" || factorSystem === "imperial") {
-            if (factorType === "jump") {
-                if (factorSystem === "metric") {
-                    measurement = "cm"
-                } else if (factorSystem === "imperial") {
-                    measurement = "inches"
-                }
-            } else if (factorType === "weight") {
-                if (factorSystem === "metric") {
-                    measurement = "kg"
-                } else if (factorSystem === "imperial") {
-                    measurement = "lbs"
-                }
-            }
+        if (factorType == 1 || factorType == 2 || factorType == 3 && !isNaN(factorType)) {
             break;
         } else {
-            console.error("Invalid factor type, retry");
+            console.error("Invalid factor type, retry.");
         }
     }
 
-    while (true) {
-        console.log(`Enter factor value in ${measurement}:`);
-        factorValue = prompt("> ").trim();
+    if (factorType !== "3") {
+        while (true) {
+            console.log("Enter a number for measurement system (1 for Metric, 2 for Imperial):")
+            factorSystem = prompt("> ").trim()
 
-        if (!isNaN(factorValue)) {
-            break;
-        } else {
-            console.error("Value entered is not a number, retry");
-        }
-    }
-
-    while (true) {
-        console.log("Enter solar system (1 for Earth Solar System, 2 for Alien Solar System):");
-        factorPlanets = prompt("> ").trim();
-
-        if (!isNaN(factorPlanets)) {
-            if (parseInt(factorPlanets) === 1) {
-                calculateUserFactors(factorType, factorSystem, measurement, factorValue, earthGravityFactors);
-                break;
-            } else if (parseInt(factorPlanets) === 2) {
-                calculateUserFactors(factorType, factorSystem, measurement, factorValue, alienGravityFactors);
+            if (factorSystem == 1 || factorSystem == 2 && !isNaN(factorType)) {
                 break;
             } else {
-                console.error("Not a valid choice, retry");
+                console.error("Invalid measurement system, retry.");
             }
-        }
-    }
-}
-
-global.getUserFactors = getUserFactors;
-
-
-function getUserFactors2() {
-    let factorType;
-    let factorSystem;
-    let measurement;
-    let factorValue;
-    let factorPlanets;
-
-    while (true) {
-        console.log("Enter a number for factor type (1 for Jump, 2 for Weight):")
-        factorType = prompt("> ")
-
-        if (factorType > 1 || factorType < 2 && !isNaN(factorType)) {
-            break;
-        }
-    }
-
-    while (true) {
-        console.log("Enter a number for measurement system (1 for Metric, 2 for Imperial):")
-        factorSystem = prompt("> ")
-
-        if (factorSystem > 1 || factorSystem < 2 && !isNaN(factorSystem)) {
-            break;
         }
     }
 
     while (true) {
         console.log("Enter a number value:")
-        factorValue = prompt("> ")
+        factorValue = prompt("> ").trim()
 
         if (!isNaN(factorValue)) {
             break;
+        } else {
+            console.error("Not a number, retry.");
         }
     }
 
     while (true) {
         console.log("Enter a number for solar system (1 for Earth Solar System, 2 for Alien):")
-        factorPlanets = prompt("> ")
+        factorPlanets = prompt("> ").trim()
 
-        if (factorPlanets > 1 && !isNaN(factorPlanets)) {
-            factorPlanets = alienGravityFactors;
-            break;
-        } else if (factorPlanets < 2 & !isNaN(factorPlanets)) {
+        if (factorPlanets == 1 && !isNaN(factorPlanets)) {
             factorPlanets = earthGravityFactors;
             break;
+        } else if (factorPlanets == 2 & !isNaN(factorPlanets)) {
+            factorPlanets = alienGravityFactors;
+            break;
+        } else {
+            console.error("Invalid input for solar system, retry.");
         }
     }
 
-    calculateUserFactors2(factorType, factorSystem, factorValue, factorPlanets)
+    calculateUserFactors(factorType, factorSystem, factorValue, factorPlanets)
 }
 
-global.getUserFactors2 = getUserFactors2;
+global.getUserFactors = getUserFactors;
